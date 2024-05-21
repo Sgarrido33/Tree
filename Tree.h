@@ -20,6 +20,58 @@ struct TreeNode {
 class Solution {
 
 public:
+    TreeNode* insert(TreeNode* root, int key) {
+        if (!root) return new TreeNode(key);
+        if (key < root->val) {
+            root->left = insert(root->left, key);
+        } else if (key > root->val) {
+            root->right = insert(root->right, key);
+        }
+        return root;
+    }
+
+    TreeNode* deleteNode(TreeNode* root, int key) {
+        if (!root) return nullptr;
+
+        if (key < root->val) {
+            root->left = deleteNode(root->left, key);
+        } else if (key > root->val) {
+            root->right = deleteNode(root->right, key);
+        } else {
+            // Node with only one child or no child
+            if (!root->left) {
+                TreeNode* temp = root->right;
+                delete root;
+                return temp;
+            } else if (!root->right) {
+                TreeNode* temp = root->left;
+                delete root;
+                return temp;
+            }
+
+            // Node with two children: Get the inorder successor (smallest in the right subtree)
+            TreeNode* temp = minValueNode(root->right);
+            root->val = temp->val;
+            root->right = deleteNode(root->right, temp->val);
+        }
+        return root;
+    }
+
+    TreeNode* minValueNode(TreeNode* node) {
+        TreeNode* current = node;
+        while (current && current->left) {
+            current = current->left;
+        }
+        return current;
+    }
+
+    // Update a node value in the BST
+    TreeNode* update(TreeNode* root, int oldVal, int newVal) {
+        root = deleteNode(root, oldVal);
+        root = insert(root, newVal);
+        return root;
+    }
+
     void preOrderTraversal(TreeNode* root) {
         if (root) {
             cout << root->val << " ";
